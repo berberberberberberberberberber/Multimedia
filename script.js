@@ -1,4 +1,3 @@
-// ─── DATE TOGGLE ────────────────────────────────────────────────────────────
 const toggle = document.getElementById("dateToggle");
 const calendar = document.querySelector(".calendar-menu");
 
@@ -18,15 +17,15 @@ document.addEventListener("click", function (e) {
 const seasonData = {
     0:  { label: "Winter",         emoji: "❄️",  tip: "January: Snow festivals in Hokkaido & Sapporo's Yuki Matsuri!" },
     1:  { label: "Late Winter",    emoji: "🌨️", tip: "February: Perfect powder snow season in Niseko." },
-    2:  { label: "Cherry Blossom", emoji: "🌸",  tip: "March: Early sakura in Kyushu — crowds are lighter!" },
+    2:  { label: "Cherry Blossom", emoji: "🌸",  tip: "March: Early sakura in Kyushu, crowds are lighter!" },
     3:  { label: "Cherry Blossom", emoji: "🌸",  tip: "April: Peak sakura season across Kyoto & Tokyo. Book early!" },
-    4:  { label: "Spring",         emoji: "🌿",  tip: "May: Gorgeous greenery, mild weather — ideal for hiking." },
+    4:  { label: "Spring",         emoji: "🌿",  tip: "May: Gorgeous greenery, mild weather, ideal for hiking." },
     5:  { label: "Rainy Season",   emoji: "🌦️", tip: "June: Hydrangeas bloom beautifully despite the rain." },
-    6:  { label: "Summer",         emoji: "🎆",  tip: "July: Gion Matsuri festival in Kyoto — unmissable!" },
+    6:  { label: "Summer",         emoji: "🎆",  tip: "July: Gion Matsuri festival in Kyoto, unmissable!" },
     7:  { label: "Summer",         emoji: "🏮",  tip: "August: Obon season, lantern festivals & fireworks." },
     8:  { label: "Autumn",         emoji: "🍁",  tip: "September: Autumn colors begin in Hokkaido." },
     9:  { label: "Fall Foliage",   emoji: "🍂",  tip: "October: Peak koyo (autumn leaves) across Kyoto's temples." },
-    10: { label: "Late Autumn",    emoji: "🍂",  tip: "November: Stunning red maples — second best time to visit!" },
+    10: { label: "Late Autumn",    emoji: "🍂",  tip: "November: Stunning red maples, second best time to visit!" },
     11: { label: "Winter",         emoji: "🎍",  tip: "December: Illuminations, hot springs & fewer tourists." },
 };
 
@@ -281,3 +280,107 @@ document.addEventListener("DOMContentLoaded", function () {
         starContainer.appendChild(star);
     }
 });
+
+(function () {
+    const modal = document.getElementById("authModal");
+    const closeBtn = document.getElementById("modalClose");
+    const tabs = document.querySelectorAll(".modal-tab");
+    const signinForm = document.getElementById("signinForm");
+    const registerForm = document.getElementById("registerForm");
+    const signinMsg = document.getElementById("signinMsg");
+    const registerMsg = document.getElementById("registerMsg");
+
+    // The 3rd ".dropdown" in the navbar is the Login dropdown
+    const loginDropdown = document.querySelectorAll(".dropdown")[2];
+    const loginLinks = loginDropdown.querySelectorAll(".dropdown-menu li a");
+    const signInLink = loginLinks[0];
+    const registerLink = loginLinks[1];
+
+    function openModal(tabName) {
+        modal.classList.add("active");
+        switchTab(tabName);
+    }
+
+    function closeModal() {
+        modal.classList.remove("active");
+        signinMsg.textContent = "";
+        registerMsg.textContent = "";
+    }
+
+    function switchTab(tabName) {
+        tabs.forEach(t => t.classList.toggle("active", t.dataset.tab === tabName));
+        signinForm.style.display = tabName === "signin" ? "flex" : "none";
+        registerForm.style.display = tabName === "register" ? "flex" : "none";
+    }
+
+    signInLink.addEventListener("click", function (e) {
+        e.preventDefault();
+        openModal("signin");
+    });
+
+    registerLink.addEventListener("click", function (e) {
+        e.preventDefault();
+        openModal("register");
+    });
+
+    closeBtn.addEventListener("click", closeModal);
+    modal.addEventListener("click", function (e) {
+        if (e.target === modal) closeModal();
+    });
+
+    tabs.forEach(tab => {
+        tab.addEventListener("click", () => switchTab(tab.dataset.tab));
+    });
+
+    function getUsers() {
+        return JSON.parse(localStorage.getItem("jtj_users") || "{}");
+    }
+
+    function saveUsers(users) {
+        localStorage.setItem("jtj_users", JSON.stringify(users));
+    }
+
+    registerForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        const user = document.getElementById("registerUser").value.trim();
+        const pass = document.getElementById("registerPass").value;
+        const pass2 = document.getElementById("registerPass2").value;
+
+        if (pass !== pass2) {
+            registerMsg.textContent = "Passwords don't match.";
+            registerMsg.className = "modal-message error";
+            return;
+        }
+
+        const users = getUsers();
+        if (users[user]) {
+            registerMsg.textContent = "Username already taken.";
+            registerMsg.className = "modal-message error";
+            return;
+        }
+
+        users[user] = pass;
+        saveUsers(users);
+        registerMsg.textContent = "Account created! You can sign in now.";
+        registerMsg.className = "modal-message success";
+        registerForm.reset();
+        setTimeout(() => switchTab("signin"), 1200);
+    });
+
+    signinForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        const user = document.getElementById("signinUser").value.trim();
+        const pass = document.getElementById("signinPass").value;
+        const users = getUsers();
+
+        if (!users[user] || users[user] !== pass) {
+            signinMsg.textContent = "Invalid username or password.";
+            signinMsg.className = "modal-message error";
+            return;
+        }
+
+        signinMsg.textContent = `Welcome back, ${user}!`;
+        signinMsg.className = "modal-message success";
+        setTimeout(closeModal, 1000);
+    });
+})();
