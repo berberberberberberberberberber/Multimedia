@@ -5,6 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>mulmed</title>
     <link rel="stylesheet" href="ok.css">
+    <div class="modal-overlay" id="authModal">
+  <div class="modal-box">
+    <span class="modal-close" id="modalClose">&times;</span>
+    <div class="modal-tabs">
+      <button type="button" class="modal-tab active" data-tab="signin">Sign In</button>
+      <button type="button" class="modal-tab" data-tab="register">Register</button>
+    </div>
+
+    <form class="modal-form" id="signinForm">
+      <input type="text" id="signinUser" placeholder="Username" required>
+      <input type="password" id="signinPass" placeholder="Password" required>
+      <button type="submit">Sign In</button>
+      <p class="modal-message" id="signinMsg"></p>
+    </form>
+
+    <form class="modal-form" id="registerForm" style="display:none;">
+      <input type="text" id="registerUser" placeholder="Username" required>
+      <input type="password" id="registerPass" placeholder="Password" required>
+      <input type="password" id="registerPass2" placeholder="Confirm Password" required>
+      <button type="submit">Register</button>
+      <p class="modal-message" id="registerMsg"></p>
+    </form>
+  </div>
+</div>
 </head>
 <body>
     <div class="sakura-container"></div>
